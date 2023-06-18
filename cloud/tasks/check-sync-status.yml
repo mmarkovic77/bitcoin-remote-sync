@@ -1,0 +1,15 @@
+- name: Sync
+  block:
+  - name: Read sync status
+    shell: "total=$(curl -sSL 'https://mempool.space/testnet/api/blocks/tip/height' 2> /dev/null); current=$(bitcoin-cli getblockcount 2> /dev/null); echo $current/$total;"
+    register: sync_info
+  - shell: "total=$(curl -sSL 'https://mempool.space/testnet/api/blocks/tip/height' 2> /dev/null); current=$(bitcoin-cli getblockcount 2> /dev/null); test $total -eq $current && echo 1 || echo 0;"
+    register: sync_status
+    failed_when: sync_status.stdout == "0"
+  rescue:
+    - debug: msg="Sync progress -> {{ sync_info.stdout }}"
+    - name: Waiting on sync...
+      wait_for:
+        timeout: "300"
+      delegate_to: localhost
+    - include_tasks: check-sync-status.yml

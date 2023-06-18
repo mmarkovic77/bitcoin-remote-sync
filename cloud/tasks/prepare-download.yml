@@ -1,0 +1,7 @@
+- name: Shutdown bitcoin
+  shell: "bitcoin-cli stop"
+
+- name: Wait for bitcoin to stop
+  shell: "bitcoin-cli -getinfo 1> /dev/null 2> /dev/null; echo $?"
+  register: output
+  until: output.stdout != "0"

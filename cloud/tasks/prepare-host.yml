@@ -1,0 +1,81 @@
+- name: Wait 600 seconds for target connection to become reachable/usable
+  ansible.builtin.wait_for_connection:
+
+- name: Find mount path
+  shell: "findmnt -nr -o target -S {{ hostvars.localhost.cloud_volume_device_id }}"
+  register: output
+
+- set_fact:
+    cloud_volume_path: "{{ output.stdout }}"
+
+- name: Check if directories are present
+  shell: "ls {{ cloud_volume_path }}/bitcoin_data 1> /dev/null 2> /dev/null; echo $?" 
+  register: output
+- set_fact:
+    directory_present: "{{ output.stdout }}"
+
+- name: Check if bitcoin.conf is present
+  shell: "ls ~/.bitcoin/bitcoin.conf 1> /dev/null 2> /dev/null; echo $?"
+  register: output
+- set_fact:
+    files_transfered: "{{ output.stdout }}"
+
+- name: Check if bitcoin is built
+  shell: "which bitcoind 1> /dev/null 2> /dev/null; echo $?"
+  register: output
+- set_fact:
+    bitcoin_built: "{{ output.stdout }}"
+
+- name: Check if bitcoin is running
+  shell: "bitcoin-cli -getinfo 1> /dev/null 2> /dev/null; echo $?"
+  register: output
+- set_fact:
+    bitcoin_running: "{{ output.stdout }}"
+
+- debug:
+    msg: "{{ directory_present }} {{ files_transfered }} {{ bitcoin_built }}  {{ bitcoin_running }}"
+
+- name: Prepare directories
+  shell: "mkdir {{ cloud_volume_path }}/bitcoin_data"
+  when: directory_present != "0"
+
+- name: Transfer files
+  copy:
+    src: "{{ playbook_dir }}/bitcoin/"
+    dest: "~/"
+  when: files_transfered != "0"
+
+- name: Build bitcoin
+  shell: "bash build.debian.sh"
+  when: bitcoin_built != "0"
+
+- name: Configure bitcoin
+  shell: "envsubst < ~/bitcoin.conf.template > ~/.bitcoin/bitcoin.conf"
+  environment: 
+    BITCOIN_DATADIR: "{{ cloud_volume_path }}/bitcoin_data"
+    #use 60% of RAM
+    BITCOIN_DB_CACHE: "{{ (((hostvars.localhost.cloud_server_ram | int) * 6) / 10)|round|int }}"
+    BITCOIN_TESTNET: "{{ hostvars.localhost.BITCOIN_USE_TESTNET }}"
+    BITCOIN_TXINDEX: "{{ hostvars.localhost.BITCOIN_TXINDEX }}"
+  when: files_transfered != "0"
+
+- name: Run bitcoin
+  shell: "bitcoind"
+  when: bitcoin_running != "0"
+
+- name: Wait for bitcoin to come up
+  shell: "bitcoin-cli -getinfo"
+  register: output
+  until: output is not failed
+  retries: 20
+  delay: 5
+
+# - name: Wait for sync
+#   shell: "total=$(curl -sSL 'https://mempool.space/api/blocks/tip/height' 2> /dev/null); current=$(bitcoin-cli getblockcount 2> /dev/null); test $total -eq $current && echo 1 || echo 0;"
+#   register: sync_status
+#   until: sync_status.stdout == "1"
+#   retries: 99999999
+#   delay: 60
+
+  
+

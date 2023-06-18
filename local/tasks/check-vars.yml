@@ -1,0 +1,22 @@
+---
+- name: Check CLOUD_API_KEY var
+  ansible.builtin.fail: msg="CLOUD_API_KEY is undefined."
+  when: CLOUD_API_KEY is undefined
+- name: Check CLOUD_PROVIDER var
+  ansible.builtin.fail: msg="CLOUD_PROVIDER is undefined."
+  when: CLOUD_PROVIDER is undefined
+- name: Check CLOUD_DISK_SIZE_GB var
+  ansible.builtin.fail: msg="CLOUD_DISK_SIZE_GB is undefined."
+  when: CLOUD_DISK_SIZE_GB is undefined
+- name: Set BITCOIN_USE_TESTNET default value
+  set_fact:
+    BITCOIN_USE_TESTNET: 0
+  when: BITCOIN_USE_TESTNET is undefined
+- name: Set BITCOIN_TXINDEX default value
+  set_fact:
+    BITCOIN_TXINDEX: 1
+  when: BITCOIN_TXINDEX is undefined
+- name: Set BITCOIN_LOCAL_DATADIR default value
+  set_fact:
+    BITCOIN_LOCAL_DATADIR: "{{ playbook_dir }}../"
+  when: BITCOIN_LOCAL_DATADIR is undefined

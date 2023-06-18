@@ -1,0 +1,7 @@
+---
+CLOUD_PROVIDER: # eg: hetzner
+CLOUD_API_KEY: # cloud provider API key
+CLOUD_DISK_SIZE_GB: #600 for mainnet, 50 for testnet
+BITCOIN_USE_TESTNET: # 0 for mainnet, 1 for testnet
+BITCOIN_TXINDEX: # 0 without txindex, 1 with txindex
+BITCOIN_LOCAL_DATADIR: # directory for local bitcoin node

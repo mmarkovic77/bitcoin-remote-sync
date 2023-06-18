@@ -1,0 +1,24 @@
+- set_fact:
+    hetzner_datacenter: "fsn1-dc14"
+
+- name: Delete ssh key
+  hcloud_ssh_key:
+    name: bitcoin-remote-sync-ssh-key
+    state: absent
+  environment: 
+    HCLOUD_TOKEN: "{{ CLOUD_API_KEY }}"
+
+- name: Delete volume
+  hcloud_volume:
+    name: bitcoin-remote-sync-volume
+    state: absent
+  environment: 
+    HCLOUD_TOKEN: "{{ CLOUD_API_KEY }}"
+
+- name: Delete server
+  hcloud_server:
+    name: bitcoin-remote-sync-server
+    state: absent
+    datacenter: "{{ hetzner_datacenter }}"
+  environment: 
+    HCLOUD_TOKEN: "{{ CLOUD_API_KEY }}"

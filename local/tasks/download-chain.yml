@@ -1,0 +1,21 @@
+
+- debug: msg="Starting chain download"
+
+#rsync -av --append --partial --inplace --info=progress2 --info=name0 -ssh-opt"-c aes128-gcm@openssh.com" 
+- name: Download chain data
+  ansible.posix.synchronize:
+    mode: pull
+    src: "{{ cloud_volume_path }}/bitcoin_data/"
+    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}"
+    use_ssh_args: true
+    compress: false
+    delay_updates: false
+    rsync_opts:
+      - "-av"
+      - "--append"
+      - "--partial"
+      - "--inplace"
+      - "--no-compress"
+  register: rsync
+
+- debug: msg="{{ rsync }}"

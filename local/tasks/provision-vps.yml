@@ -1,0 +1,3 @@
+---
+- name: Run provider task
+  include_tasks: "cloud/drivers/{{CLOUD_PROVIDER}}/main.yml"
