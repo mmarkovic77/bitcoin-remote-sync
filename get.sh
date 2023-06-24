@@ -18,7 +18,7 @@ mkdir $INSTALLER_DIR
 
 readonly BUNDLE_FILE="${SCRIPT_DIR}/bundle.tgz"
 
-LATEST_RELEASE=$(curl -L https://api.github.com/repos/bitcoin-ops/bitcoin-remote-sync/tags | grep "tarball_url" | cut -d : -f 2,3 | tr -d \" | tr -d ,)
+LATEST_RELEASE=$(curl -L https://api.github.com/repos/bitcoin-ops/bitcoin-remote-sync/tags | grep "tarball_url" | cut -d : -f 2,3 | tr -d \" | tr -d , | tail -n 1)
 
 HTTP_CODE="$(curl $LATEST_RELEASE \
   --location \
