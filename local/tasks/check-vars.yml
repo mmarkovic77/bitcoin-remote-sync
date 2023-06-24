@@ -15,7 +15,7 @@
     when: Providers.values()|list|length > 1
   - set_fact:
       CLOUD_PROVIDER: hetzner
-    when: Providers.values()|list|length < 1
+    when: Providers.values()|list|length < 2
   rescue:
     - include_tasks: check-vars.yml
 
