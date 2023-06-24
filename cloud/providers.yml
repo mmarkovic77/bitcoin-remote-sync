@@ -1,0 +1,4 @@
+Providers:
+  1:
+    name: hetzner
+    id: 1

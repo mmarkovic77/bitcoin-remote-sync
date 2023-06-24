@@ -14,9 +14,13 @@ set -x
 SCRIPT_DIR="$(dirname "$0")"
 INSTALLER_DIR=bitcoin-remote-sync
 
+mkdir $INSTALLER_DIR
+
 readonly BUNDLE_FILE="${SCRIPT_DIR}/bundle.tgz"
 
-HTTP_CODE="$(curl https://github.com/bitcoin-ops/bitcoin-remote-sync/archive/refs/tags/0.1.tar.gz\
+LATEST_RELEASE=$(curl -L https://api.github.com/repos/bitcoin-ops/bitcoin-remote-sync/tags | grep "tarball_url" | cut -d : -f 2,3 | tr -d \" | tr -d ,)
+
+HTTP_CODE="$(curl $LATEST_RELEASE \
   --location \
   --output "${BUNDLE_FILE}" \
   --write-out '%{http_code}' \
@@ -31,7 +35,8 @@ tar \
   --gunzip \
   --extract \
   --file "${BUNDLE_FILE}" \
-  --directory "${INSTALLER_DIR}"
+  --directory "${INSTALLER_DIR}" \
+  --strip 1
 
 pushd "${INSTALLER_DIR}"
 ./run.sh

@@ -1,13 +1,35 @@
 ---
-- name: Check CLOUD_API_KEY var
-  ansible.builtin.fail: msg="CLOUD_API_KEY is undefined."
-  when: CLOUD_API_KEY is undefined
-- name: Check CLOUD_PROVIDER var
-  ansible.builtin.fail: msg="CLOUD_PROVIDER is undefined."
+
+- name: Determine cloud provider
   when: CLOUD_PROVIDER is undefined
-- name: Check CLOUD_DISK_SIZE_GB var
-  ansible.builtin.fail: msg="CLOUD_DISK_SIZE_GB is undefined."
-  when: CLOUD_DISK_SIZE_GB is undefined
+  block:
+  - name: Asking for cloud provider
+    ansible.builtin.pause:
+      prompt: "Choose cloud provider; \n 1 - Hetzner"
+      echo: yes
+    register: output
+    failed_when: output.user_input|int not in Providers.values()|map(attribute='id')|list
+    when: Providers.values()|list|length > 1
+  - set_fact:
+      CLOUD_PROVIDER: "{{ Providers[output.user_input|int]['name'] }}"
+    when: Providers.values()|list|length > 1
+  - set_fact:
+      CLOUD_PROVIDER: hetzner
+    when: Providers.values()|list|length < 1
+  rescue:
+    - include_tasks: check-vars.yml
+
+- name: Check CLOUD_API_KEY var
+  when: CLOUD_API_KEY is undefined
+  block:
+  - name: Asking for cloud provider API key
+    ansible.builtin.pause:
+      prompt: "Enter your provider API key"
+      echo: yes
+    register: output
+  - set_fact:
+      CLOUD_API_KEY: "{{ output.user_input }}"
+
 - name: Set BITCOIN_USE_TESTNET default value
   set_fact:
     BITCOIN_USE_TESTNET: 0
@@ -16,7 +38,14 @@
   set_fact:
     BITCOIN_TXINDEX: 1
   when: BITCOIN_TXINDEX is undefined
+  
+- name: Check CLOUD_DISK_SIZE_GB var
+  set_fact:
+        CLOUD_DISK_SIZE_GB: " {{ (BITCOIN_USE_TESTNET == 1) | ternary(50, (BITCOIN_TXINDEX == 1) | ternary (600, 500 )) }}"
+  when: CLOUD_DISK_SIZE_GB is undefined
+- debug: msg="Automatically set cloud disk size to{{ CLOUD_DISK_SIZE_GB }}GB depending on configuration."
+
 - name: Set BITCOIN_LOCAL_DATADIR default value
   set_fact:
-    BITCOIN_LOCAL_DATADIR: "{{ playbook_dir }}../"
-  when: BITCOIN_LOCAL_DATADIR is undefined
+    BITCOIN_LOCAL_DATADIR: "{{ playbook_dir }}/../"
+  when: BITCOIN_LOCAL_DATADIR1 is undefined
