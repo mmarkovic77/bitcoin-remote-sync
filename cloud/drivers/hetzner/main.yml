@@ -27,14 +27,18 @@
 
 - name: Generate SSH key
   block:
+    #workaround bug with keypair generation on windows fs
     - file:
         path: "{{ playbook_dir }}/ssh/hetzner_rsa"
         state: touch
+    #workaround bug with keypair generation on windows fs
     - file:
         path: "{{ playbook_dir }}/ssh/hetzner_rsa.pub"
         state: touch
     - openssh_keypair:
         path:  "{{ playbook_dir }}/ssh/hetzner_rsa"
+        #a must because of workaround
+        regenerate: full_idempotence
         type: ed25519
         state: present
       register: output      
