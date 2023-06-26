@@ -10,6 +10,7 @@
     - name: Provision VPS
       include_tasks: local/tasks/provision-vps.yml
 - name: Sync bitcoin on cloud host
+  gather_facts: false
   hosts: cloud
   tasks:
     - name: Prepare cloud host
@@ -25,6 +26,7 @@
       include_tasks: "local/tasks/download-chain.yml"
 - name: Clean up cloud
   hosts: localhost
+  tags: cleanup
   tasks:
     - include_tasks: "local/tasks/deprovision-vps.yml"
       
