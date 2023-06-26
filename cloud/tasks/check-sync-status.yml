@@ -1,9 +1,9 @@
 - name: Sync
   block:
   - name: Read sync status
-    shell: "total=$(curl -sSL 'https://mempool.space/testnet/api/blocks/tip/height' 2> /dev/null); current=$(bitcoin-cli getblockcount 2> /dev/null); echo $current/$total;"
+    shell: "total=$(curl -sSL 'https://mempool.space/{{(hostvars.localhost.BITCOIN_USE_TESTNET == 1) | ternary ('testnet', '')}}/api/blocks/tip/height' 2> /dev/null); current=$(bitcoin-cli getblockcount 2> /dev/null); echo $current/$total;"
     register: sync_info
-  - shell: "total=$(curl -sSL 'https://mempool.space/testnet/api/blocks/tip/height' 2> /dev/null); current=$(bitcoin-cli getblockcount 2> /dev/null); test $total -eq $current && echo 1 || echo 0;"
+  - shell: "total=$(curl -sSL 'https://mempool.space/{{(hostvars.localhost.BITCOIN_USE_TESTNET == 1) | ternary ('testnet', '')}}/api/blocks/tip/height' 2> /dev/null); current=$(bitcoin-cli getblockcount 2> /dev/null); test $total -eq $current && echo 1 || echo 0;"
     register: sync_status
     failed_when: sync_status.stdout == "0"
   rescue:
