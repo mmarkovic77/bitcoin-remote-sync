@@ -14,7 +14,7 @@ set -x
 SCRIPT_DIR="$(dirname "$0")"
 INSTALLER_DIR=bitcoin-remote-sync
 
-mkdir $INSTALLER_DIR
+mkdir -p $INSTALLER_DIR
 
 readonly BUNDLE_FILE="${SCRIPT_DIR}/bundle.tgz"
 
