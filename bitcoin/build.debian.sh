@@ -17,6 +17,3 @@ make -j$(nproc)
 make install
 cd ~
 mkdir -p .bitcoin
-envsubst < bitcoin.conf.template > .bitcoin/bitcoin.conf 
-cat .bitcoin/bitcoin.conf
-/usr/local/bin/bitcoind
