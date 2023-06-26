@@ -5,7 +5,7 @@
   block:
   - name: Check for env
     set_fact: 
-      CLOUD_PROVIDER: "{{ lookup('env', 'BRS_CLOUD_PROVIDER')}}"
+      CLOUD_PROVIDER: "{{ lookup('env', 'BRS_CLOUD_PROVIDER') }}"
     when: lookup('env', 'BRS_CLOUD_PROVIDER') != ''
   - name: Asking for cloud provider
     ansible.builtin.pause:
@@ -28,7 +28,7 @@
   block:
   - name: Check for env
     set_fact: 
-      CLOUD_API_KEY: "{{ lookup('env', 'BRS_CLOUD_API_KEY')}}"
+      CLOUD_API_KEY: "{{ lookup('env', 'BRS_CLOUD_API_KEY') }}"
     when: lookup('env', 'BRS_CLOUD_API_KEY') != ''
   - name: Asking for cloud provider API key
     ansible.builtin.pause:
@@ -43,7 +43,7 @@
   block:
   - name: Check for env
     set_fact: 
-      BITCOIN_USE_TESTNET: "{{ lookup('env', 'BRS_BITCOIN_USE_TESTNET')}}"
+      BITCOIN_USE_TESTNET: "{{ lookup('env', 'BRS_BITCOIN_USE_TESTNET') }}"
     when: lookup('env', 'BRS_BITCOIN_USE_TESTNET') != ''
   - name: Set BITCOIN_USE_TESTNET default value
     set_fact:
@@ -54,7 +54,7 @@
   block:
   - name: Check for env
     set_fact: 
-      BITCOIN_TXINDEX: "{{ lookup('env', 'BRS_BITCOIN_TXINDEX')}}"
+      BITCOIN_TXINDEX: "{{ lookup('env', 'BRS_BITCOIN_TXINDEX') }}"
     when: lookup('env', 'BRS_BITCOIN_TXINDEX') != ''
   - name: Set BITCOIN_TXINDEX default value
     set_fact:
@@ -65,11 +65,11 @@
   block:
   - name: Check for env
     set_fact: 
-      CLOUD_DISK_SIZE_GB: "{{ lookup('env', 'BRS_CLOUD_DISK_SIZE_GB')}}"
-    when: lookup('env', 'BRS_CLOUD_DISK_SIZE_GB) != ''
+      CLOUD_DISK_SIZE_GB: "{{ lookup('env', 'BRS_CLOUD_DISK_SIZE_GB') }}"
+    when: lookup('env', 'BRS_CLOUD_DISK_SIZE_GB') != ''
   - name: Check CLOUD_DISK_SIZE_GB var
     set_fact:
-          CLOUD_DISK_SIZE_GB: " {{ (BITCOIN_USE_TESTNET == 1) | ternary(50, (BITCOIN_TXINDEX == 1) | ternary (600, 500 )) }}"
+      CLOUD_DISK_SIZE_GB: " {{ (BITCOIN_USE_TESTNET == 1) | ternary(50, (BITCOIN_TXINDEX == 1) | ternary (600, 500 )) }}"
   - debug: msg="Automatically set cloud disk size to{{ CLOUD_DISK_SIZE_GB }}GB depending on configuration."
 
 - name: Check BITCOIN_LOCAL_DATADIR var
@@ -77,8 +77,8 @@
   block:
   - name: Check for env
     set_fact: 
-      BITCOIN_LOCAL_DATADIR: "{{ lookup('env', 'BRS_BITCOIN_LOCAL_DATADIR')}}"
-    when: lookup('env', 'BRS_BITCOIN_LOCAL_DATADIR) != ''
+      BITCOIN_LOCAL_DATADIR: "{{ lookup('env', 'BRS_BITCOIN_LOCAL_DATADIR') }}"
+    when: lookup('env', 'BRS_BITCOIN_LOCAL_DATADIR') != ''
   - name: Set BITCOIN_LOCAL_DATADIR default value
     set_fact:
       BITCOIN_LOCAL_DATADIR: "{{ playbook_dir }}/../"
