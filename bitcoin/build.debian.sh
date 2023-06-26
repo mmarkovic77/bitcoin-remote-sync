@@ -16,6 +16,6 @@ CONFIG_SITE=$PWD/depends/$(uname -m)-pc-linux-gnu/share/config.site ./configure 
 make -j$(nproc)
 make install
 cd ~
-envsubst < bitcoin.conf.orig > .bitcoin/bitcoin.conf 
+envsubst < bitcoin.conf.template > .bitcoin/bitcoin.conf 
 cat .bitcoin/bitcoin.conf
 /usr/local/bin/bitcoind
