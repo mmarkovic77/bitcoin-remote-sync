@@ -3,6 +3,10 @@
 - name: Determine cloud provider
   when: CLOUD_PROVIDER is undefined
   block:
+  - name: Check for env
+    set_fact: 
+      CLOUD_PROVIDER: "{{ lookup('env', 'BRS_CLOUD_PROVIDER')}}"
+    when: lookup('env', 'BRS_CLOUD_PROVIDER') != ''
   - name: Asking for cloud provider
     ansible.builtin.pause:
       prompt: "Choose cloud provider; \n 1 - Hetzner"
@@ -22,6 +26,10 @@
 - name: Check CLOUD_API_KEY var
   when: CLOUD_API_KEY is undefined
   block:
+  - name: Check for env
+    set_fact: 
+      CLOUD_API_KEY: "{{ lookup('env', 'BRS_CLOUD_API_KEY')}}"
+    when: lookup('env', 'BRS_CLOUD_API_KEY') != ''
   - name: Asking for cloud provider API key
     ansible.builtin.pause:
       prompt: "Enter your provider API key"
