@@ -3,8 +3,6 @@
   vars_files:
     - cloud/providers.yml
   tasks:
-    - name: Verify dependencies
-      include_tasks: local/tasks/verify-deps.yml
     - name: Check vars
       include_tasks: local/tasks/check-vars.yml
     - name: Provision VPS

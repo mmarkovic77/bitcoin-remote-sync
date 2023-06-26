@@ -1,2 +1,5 @@
 ansible==8.0.0
 hcloud==1.20.0
+
+#has prebuilt wheel for rpi
+cryptography==40.0.1

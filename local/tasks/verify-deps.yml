@@ -1,6 +1,0 @@
-- name: Install ssh
-  ansible.builtin.package:
-    name: openssh
-    state: present
-- debug:
-    msg: "Openssh is installed."
