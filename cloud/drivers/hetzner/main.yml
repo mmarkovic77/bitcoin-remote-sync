@@ -27,23 +27,11 @@
 
 - name: Generate SSH key
   block:
-    #workaround bug with keypair generation on windows fs
-    - file:
-        path: "{{ playbook_dir }}/ssh/hetzner_rsa"
-        state: touch
-        mode: 700
-    #workaround bug with keypair generation on windows fs
-    - file:
-        path: "{{ playbook_dir }}/ssh/hetzner_rsa.pub"
-        state: touch
-        mode: 700
     - openssh_keypair:
         path:  "{{ playbook_dir }}/ssh/hetzner_rsa"
-        #a must because of workaround
-        regenerate: full_idempotence
         type: ed25519
         state: present
-        mode: 700
+        mode: 600
       register: output      
     - set_fact:
         hetzner_ssh_pub: "{{ output.public_key }}"
