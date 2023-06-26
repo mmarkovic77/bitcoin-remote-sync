@@ -26,24 +26,27 @@
   when: ssh_file_exists.stat.exists
 
 - name: Generate SSH key
-  openssh_keypair:
-    path:  "{{ playbook_dir }}/ssh/hetzner_rsa"
-    type: ed25519
-    state: present
-  register: output
-  when: not ssh_file_exists.stat.exists
-
-- debug: msg="Generated ssh key in {{ playbook_dir }}/ssh/hetzner_rsa"
+  block:
+    - file:
+        path: "{{ playbook_dir }}/ssh/hetzner_rsa"
+        state: touch
+    - file:
+        path: "{{ playbook_dir }}/ssh/hetzner_rsa.pub"
+        state: touch
+    - openssh_keypair:
+        path:  "{{ playbook_dir }}/ssh/hetzner_rsa"
+        type: ed25519
+        state: present
+      register: output      
+    - set_fact:
+        hetzner_ssh_pub: "{{ output.public_key }}"
+    - debug: msg="Generated ssh key in {{ playbook_dir }}/ssh/hetzner_rsa"
   when: not ssh_file_exists.stat.exists
 
 - debug: msg="SSH key already present in {{ playbook_dir }}/ssh/hetzner_rsa"
   when: ssh_file_exists.stat.exists
 
-- set_fact:
-    hetzner_ssh_pub: "{{ output.public_key }}"
-  when: not ssh_file_exists.stat.exists
-
-- name: Create an ssh_key
+- name: Provision an ssh_key
   hcloud_ssh_key:
     name: bitcoin-remote-sync-ssh-key
     public_key: "{{ hetzner_ssh_pub }}"
@@ -51,7 +54,7 @@
   environment: 
     HCLOUD_TOKEN: "{{ CLOUD_API_KEY }}"
 
-- name: Create server
+- name: Provision server
   hcloud_server:
     name: bitcoin-remote-sync-server
     server_type: cax31
@@ -68,7 +71,7 @@
     cloud_server_ipv4: "{{ output.hcloud_server.ipv4_address }}"
     cloud_server_ram: "16000"
 
-- name: Create volume
+- name: Provision volume
   hcloud_volume:
     name: bitcoin-remote-sync-volume
     server: bitcoin-remote-sync-server

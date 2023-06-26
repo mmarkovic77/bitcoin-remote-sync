@@ -38,22 +38,47 @@
   - set_fact:
       CLOUD_API_KEY: "{{ output.user_input }}"
 
-- name: Set BITCOIN_USE_TESTNET default value
-  set_fact:
-    BITCOIN_USE_TESTNET: 0
+- name: Check BITCOIN_USE_TESTNET var
   when: BITCOIN_USE_TESTNET is undefined
-- name: Set BITCOIN_TXINDEX default value
-  set_fact:
-    BITCOIN_TXINDEX: 1
-  when: BITCOIN_TXINDEX is undefined
+  block:
+  - name: Check for env
+    set_fact: 
+      BITCOIN_USE_TESTNET: "{{ lookup('env', 'BRS_BITCOIN_USE_TESTNET')}}"
+    when: lookup('env', 'BRS_BITCOIN_USE_TESTNET') != ''
+  - name: Set BITCOIN_USE_TESTNET default value
+    set_fact:
+      BITCOIN_USE_TESTNET: 0
   
-- name: Check CLOUD_DISK_SIZE_GB var
-  set_fact:
-        CLOUD_DISK_SIZE_GB: " {{ (BITCOIN_USE_TESTNET == 1) | ternary(50, (BITCOIN_TXINDEX == 1) | ternary (600, 500 )) }}"
-  when: CLOUD_DISK_SIZE_GB is undefined
-- debug: msg="Automatically set cloud disk size to{{ CLOUD_DISK_SIZE_GB }}GB depending on configuration."
+- name: Check BITCOIN_TXINDEX var
+  when: BITCOIN_TXINDEX is undefined
+  block:
+  - name: Check for env
+    set_fact: 
+      BITCOIN_TXINDEX: "{{ lookup('env', 'BRS_BITCOIN_TXINDEX')}}"
+    when: lookup('env', 'BRS_BITCOIN_TXINDEX') != ''
+  - name: Set BITCOIN_TXINDEX default value
+    set_fact:
+      BITCOIN_TXINDEX: 1
 
-- name: Set BITCOIN_LOCAL_DATADIR default value
-  set_fact:
-    BITCOIN_LOCAL_DATADIR: "{{ playbook_dir }}/../"
-  when: BITCOIN_LOCAL_DATADIR1 is undefined
+- name: Check CLOUD_DISK_SIZE_GB var
+  when: CLOUD_DISK_SIZE_GB is undefined
+  block:
+  - name: Check for env
+    set_fact: 
+      CLOUD_DISK_SIZE_GB: "{{ lookup('env', 'BRS_CLOUD_DISK_SIZE_GB')}}"
+    when: lookup('env', 'BRS_CLOUD_DISK_SIZE_GB) != ''
+  - name: Check CLOUD_DISK_SIZE_GB var
+    set_fact:
+          CLOUD_DISK_SIZE_GB: " {{ (BITCOIN_USE_TESTNET == 1) | ternary(50, (BITCOIN_TXINDEX == 1) | ternary (600, 500 )) }}"
+  - debug: msg="Automatically set cloud disk size to{{ CLOUD_DISK_SIZE_GB }}GB depending on configuration."
+
+- name: Check BITCOIN_LOCAL_DATADIR var
+  when: BITCOIN_LOCAL_DATADIR is undefined
+  block:
+  - name: Check for env
+    set_fact: 
+      BITCOIN_LOCAL_DATADIR: "{{ lookup('env', 'BRS_BITCOIN_LOCAL_DATADIR')}}"
+    when: lookup('env', 'BRS_BITCOIN_LOCAL_DATADIR) != ''
+  - name: Set BITCOIN_LOCAL_DATADIR default value
+    set_fact:
+      BITCOIN_LOCAL_DATADIR: "{{ playbook_dir }}/../"
