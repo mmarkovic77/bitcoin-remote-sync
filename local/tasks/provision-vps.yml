@@ -1,3 +1,28 @@
 ---
+- name: Check if SSH key exists
+  stat:
+    path: "{{ playbook_dir }}/ssh/key"
+  register: ssh_file_exists
+
+- name: Read SSH key if exists
+  set_fact:
+    ssh_pubkey: "{{ lookup('file', '{{ playbook_dir }}/ssh/key.pub') }}"
+  when: ssh_file_exists.stat.exists
+
+- name: Generate SSH key
+  block:
+    - openssh_keypair:
+        path:  "{{ playbook_dir }}/ssh/key"
+        type: ed25519
+        state: present
+      register: output      
+    - set_fact:
+        ssh_pubkey: "{{ output.public_key }}"
+    - debug: msg="Generated ssh key in {{ playbook_dir }}/ssh/key"
+  when: not ssh_file_exists.stat.exists
+
+- debug: msg="SSH key already present in {{ playbook_dir }}/ssh/key"
+  when: ssh_file_exists.stat.exists
+
 - name: Run provider task
   include_tasks: "cloud/drivers/{{CLOUD_PROVIDER}}/main.yml"

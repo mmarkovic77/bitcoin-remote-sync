@@ -18,7 +18,7 @@
     - name: Prepare download
       include_tasks: "cloud/tasks/prepare-download.yml"
 - name: Download chain
-  hosts: cloud_weak_cipher
+  hosts: cloud_vps_ssh_optimized
   tasks:
     - name: Download chain
       include_tasks: "local/tasks/download-chain.yml"

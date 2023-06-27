@@ -1,50 +1,11 @@
-- name: Gather hcloud datacenter info
-  hcloud_datacenter_info:
-  register: output
-  environment: 
-    HCLOUD_TOKEN: "{{ CLOUD_API_KEY }}"
-- name: Print the gathered info
-  debug:
-    var: output
-# - name: Pause for datacenter
-#   ansible.builtin.pause:
-#     prompt: "Enter datacenter name, eg: fsn1-dc14"
-#     echo: yes
-#   register: output
-- set_fact:
-    # hetzner_datacenter: "{{ output.user_input }}"
-    hetzner_datacenter: "fsn1-dc14"
-
-- name: Check if SSH key exists
-  stat:
-    path: "{{ playbook_dir }}/ssh/hetzner_rsa"
-  register: ssh_file_exists
-
-- name: Read SSH key if exists
-  set_fact:
-    hetzner_ssh_pub: "{{ lookup('file', '{{ playbook_dir }}/ssh/hetzner_rsa.pub') }}"
-  when: ssh_file_exists.stat.exists
-
-- name: Generate SSH key
-  block:
-    - openssh_keypair:
-        path:  "{{ playbook_dir }}/ssh/hetzner_rsa"
-        type: ed25519
-        state: present
-        mode: 600
-      register: output      
-    - set_fact:
-        hetzner_ssh_pub: "{{ output.public_key }}"
-    - debug: msg="Generated ssh key in {{ playbook_dir }}/ssh/hetzner_rsa"
-  when: not ssh_file_exists.stat.exists
-
-- debug: msg="SSH key already present in {{ playbook_dir }}/ssh/hetzner_rsa"
-  when: ssh_file_exists.stat.exists
+---
+- name: Configure host
+  include_tasks: configure.yml
 
 - name: Provision an ssh_key
   hcloud_ssh_key:
     name: bitcoin-remote-sync-ssh-key
-    public_key: "{{ hetzner_ssh_pub }}"
+    public_key: "{{ ssh_pubkey }}"
     state: present
   environment: 
     HCLOUD_TOKEN: "{{ CLOUD_API_KEY }}"
@@ -52,8 +13,8 @@
 - name: Provision server
   hcloud_server:
     name: bitcoin-remote-sync-server
-    server_type: cax31
-    image: debian-11
+    server_type: "{{ hetzner_instance_type }}"
+    image: "{{ hetzner_image }}"
     state: present
     datacenter: "{{ hetzner_datacenter }}"
     ssh_keys:
@@ -64,7 +25,7 @@
 
 - set_fact:
     cloud_server_ipv4: "{{ output.hcloud_server.ipv4_address }}"
-    cloud_server_ram: "16000"
+    cloud_server_ram: "{{ hetzner_ram_available }}"
 
 - name: Provision volume
   hcloud_volume:
@@ -82,16 +43,18 @@
     cloud_volume_device_id: "{{ output.hcloud_volume.linux_device}}"
 
 - add_host:
-    name: "{{ cloud_server_ipv4 }}"
+    hostname: 'cloud_vps'
+    ansible_host: '{{ cloud_server_ipv4 }}'
     groups: cloud
-    ansible_private_key_file: "{{ playbook_dir }}/ssh/hetzner_rsa"
+    ansible_private_key_file: "{{ playbook_dir }}/ssh/key"
     ansible_user: "root"
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
 - add_host:
-    name: "{{ cloud_server_ipv4 }}"
-    groups: cloud_weak_cipher
-    ansible_private_key_file: "{{ playbook_dir }}/ssh/hetzner_rsa"
+    hostname: 'cloud_vps_ssh_optimized'
+    ansible_host: '{{ cloud_server_ipv4 }}'
+    groups: cloud_vps_ssh_optimized
+    ansible_private_key_file: "{{ playbook_dir }}/ssh/key"
     ansible_user: "root"    
     ansible_ssh_common_args: "-c aes128-gcm@openssh.com -o Compression=no -o StrictHostKeyChecking=no"
     

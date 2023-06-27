@@ -1,0 +1,23 @@
+- name: Configure EU region host
+  set_fact:
+    hetzner_datacenter: fsn1-dc14
+    hetzner_instance_type: cax31
+    hetzner_image: debian-11
+    hetzner_ram_available: '16000'
+  when: CLOUD_REGION == 'eu'
+
+- name: Configure US East region host
+  set_fact:
+    hetzner_datacenter: ash-dc1
+    hetzner_instance_type: cx41
+    hetzner_image: debian-11
+    hetzner_ram_available: '16000'
+  when: CLOUD_REGION == 'us-e'
+
+- name: Configure US West region host
+  set_fact:
+    hetzner_datacenter: hil-dc1
+    hetzner_instance_type: cx41
+    hetzner_image: debian-11
+    hetzner_ram_available: '16000'
+  when: CLOUD_REGION == 'us-w'

@@ -38,6 +38,17 @@
   - set_fact:
       CLOUD_API_KEY: "{{ output.user_input }}"
 
+- name: Check CLOUD_REGION var
+  when: CLOUD_REGION is undefined
+  block:
+  - name: Check for env
+    set_fact: 
+      CLOUD_REGION: "{{ lookup('env', 'BRS_CLOUD_REGION') }}"
+    when: lookup('env', 'CLOUD_REGION') != ''
+  - name: Set CLOUD_REGION default value
+    set_fact:
+      CLOUD_REGION: 'eu'
+
 - name: Check BITCOIN_USE_TESTNET var
   when: BITCOIN_USE_TESTNET is undefined
   block:

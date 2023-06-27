@@ -5,6 +5,9 @@
   shell: "findmnt -nr -o target -S {{ hostvars.localhost.cloud_volume_device_id }}"
   register: output
 
+- name: Set reserved blocks to 0%
+  shell: "tune2fs -m 0 {{ hostvars.localhost.cloud_volume_device_id }}"
+
 - set_fact:
     cloud_volume_path: "{{ output.stdout }}"
 
