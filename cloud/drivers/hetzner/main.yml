@@ -42,22 +42,6 @@
 - set_fact:
     cloud_volume_device_id: "{{ output.hcloud_volume.linux_device}}"
 
-- add_host:
-    hostname: 'cloud_vps'
-    ansible_host: '{{ cloud_server_ipv4 }}'
-    groups: cloud
-    ansible_private_key_file: "{{ playbook_dir }}/ssh/key"
-    ansible_user: "root"
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
-
-- add_host:
-    hostname: 'cloud_vps_ssh_optimized'
-    ansible_host: '{{ cloud_server_ipv4 }}'
-    groups: cloud_vps_ssh_optimized
-    ansible_private_key_file: "{{ playbook_dir }}/ssh/key"
-    ansible_user: "root"    
-    ansible_ssh_common_args: "-c aes128-gcm@openssh.com -o Compression=no -o StrictHostKeyChecking=no"
-    
 - debug:
     msg:
       - "Hetzner server created:"

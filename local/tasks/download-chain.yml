@@ -1,11 +1,11 @@
 
 - debug: msg="Starting chain download"
 
-- name: Download chain data
+- name: Download chainstate
   ansible.posix.synchronize:
     mode: pull
-    src: "{{ hostvars.cloud_vps.cloud_volume_path }}/bitcoin_data/"
-    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}"
+    src: "{{ hostvars.cloud_vps.cloud_volume_path }}/bitcoin_data/chainstate"
+    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}/chainstate"
     use_ssh_args: true
     compress: false
     delay_updates: false
@@ -13,12 +13,50 @@
       - "--log-file={{playbook_dir}}/../rsync.log"
       - "--size-only"
       - "-av"
+      - "--delete"
       - "--append"
       - "--inplace"
       - "--partial"
       - "--no-compress"
       - "--human-readable"
       - "--info=progress2"
-  register: rsync
 
-- debug: msg="{{ rsync }}"
+- name: Download blocks
+  ansible.posix.synchronize:
+    mode: pull
+    src: "{{ hostvars.cloud_vps.cloud_volume_path }}/bitcoin_data/blocks"
+    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}/blocks"
+    use_ssh_args: true
+    compress: false
+    delay_updates: false
+    rsync_opts:
+      - "--log-file={{playbook_dir}}/../rsync.log"
+      - "--size-only"
+      - "-av"
+      - "--delete"
+      - "--append"
+      - "--inplace"
+      - "--partial"
+      - "--no-compress"
+      - "--human-readable"
+      - "--info=progress2"
+
+- name: Download indexes
+  ansible.posix.synchronize:
+    mode: pull
+    src: "{{ hostvars.cloud_vps.cloud_volume_path }}/bitcoin_data/indexes"
+    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}/indexes"
+    use_ssh_args: true
+    compress: false
+    delay_updates: false
+    rsync_opts:
+      - "--log-file={{playbook_dir}}/../rsync.log"
+      - "--size-only"
+      - "--delete"
+      - "-av"
+      - "--append"
+      - "--inplace"
+      - "--partial"
+      - "--no-compress"
+      - "--human-readable"
+      - "--info=progress2"

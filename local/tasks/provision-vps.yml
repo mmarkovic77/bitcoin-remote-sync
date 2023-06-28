@@ -26,3 +26,19 @@
 
 - name: Run provider task
   include_tasks: "cloud/drivers/{{CLOUD_PROVIDER}}/main.yml"
+
+- add_host:
+    hostname: 'cloud_vps'
+    ansible_host: '{{ cloud_server_ipv4 }}'
+    groups: cloud
+    ansible_private_key_file: "{{ playbook_dir }}/ssh/key"
+    ansible_user: "root"
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ControlMaster=auto -o ControlPersist=10m"
+
+- add_host:
+    hostname: 'cloud_vps_transfer_optimized'
+    ansible_host: '{{ cloud_server_ipv4 }}'
+    groups: cloud_vps_transfer_optimized
+    ansible_private_key_file: "{{ playbook_dir }}/ssh/key"
+    ansible_user: "root"    
+    ansible_ssh_common_args: "-c aes128-gcm@openssh.com -o Compression=no -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ControlMaster=auto -o ControlPersist=10m"
