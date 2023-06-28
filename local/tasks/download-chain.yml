@@ -5,7 +5,7 @@
   ansible.posix.synchronize:
     mode: pull
     src: "{{ hostvars.cloud_vps.cloud_volume_path }}/bitcoin_data/chainstate"
-    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}/chainstate"
+    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}"
     use_ssh_args: true
     compress: false
     delay_updates: false
@@ -25,7 +25,7 @@
   ansible.posix.synchronize:
     mode: pull
     src: "{{ hostvars.cloud_vps.cloud_volume_path }}/bitcoin_data/blocks"
-    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}/blocks"
+    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}"
     use_ssh_args: true
     compress: false
     delay_updates: false
@@ -45,7 +45,7 @@
   ansible.posix.synchronize:
     mode: pull
     src: "{{ hostvars.cloud_vps.cloud_volume_path }}/bitcoin_data/indexes"
-    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}/indexes"
+    dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}"
     use_ssh_args: true
     compress: false
     delay_updates: false
