@@ -1,3 +1,4 @@
 ---
 - name: Run provider task
   include_tasks: "cloud/drivers/{{CLOUD_PROVIDER}}/clean.yml"
+  when: DEBUG != 1

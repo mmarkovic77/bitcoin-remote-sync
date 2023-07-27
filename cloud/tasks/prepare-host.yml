@@ -10,9 +10,10 @@
 
 - set_fact:
     cloud_volume_path: "{{ output.stdout }}"
+    cloud_bitcoin_data_path: "{{ output.stdout}}/bitcoin_data{{(hostvars.localhost.BITCOIN_USE_TESTNET == 1) | ternary ('/testnet3', '')}}" 
 
 - name: Check if directories are present
-  shell: "ls {{ cloud_volume_path }}/bitcoin_data 1> /dev/null 2> /dev/null; echo $?" 
+  shell: "ls {{ cloud_bitcoin_data_path }} 1> /dev/null 2> /dev/null; echo $?" 
   register: output
 - set_fact:
     directory_present: "{{ output.stdout }}"
@@ -39,7 +40,7 @@
     msg: "{{ directory_present }} {{ files_transfered }} {{ bitcoin_built }}  {{ bitcoin_running }}"
 
 - name: Prepare directories
-  shell: "mkdir {{ cloud_volume_path }}/bitcoin_data"
+  shell: "mkdir {{ cloud_bitcoin_data_path }}"
   when: directory_present != "0"
 
 - name: Transfer files
@@ -72,13 +73,3 @@
   until: output is not failed
   retries: 20
   delay: 5
-
-# - name: Wait for sync
-#   shell: "total=$(curl -sSL 'https://mempool.space/api/blocks/tip/height' 2> /dev/null); current=$(bitcoin-cli getblockcount 2> /dev/null); test $total -eq $current && echo 1 || echo 0;"
-#   register: sync_status
-#   until: sync_status.stdout == "1"
-#   retries: 99999999
-#   delay: 60
-
-  
-

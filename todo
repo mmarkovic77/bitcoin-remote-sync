@@ -1,3 +1,0 @@
-- skip dl if bundle already present
-- add pruned node support (both manual and size)
-- add region env var to be provided as argument for cloud 

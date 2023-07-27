@@ -93,3 +93,14 @@
   - name: Set BITCOIN_LOCAL_DATADIR default value
     set_fact:
       BITCOIN_LOCAL_DATADIR: "{{ playbook_dir }}/../"
+
+- name: Check DEBUG var
+  when: DEBUG is undefined
+  block:
+  - name: Check for env
+    set_fact: 
+      DEBUG: "{{ lookup('env', 'BRS_DEBUG') }}"
+    when: lookup('env', 'BRS_DEBUG') != ''
+  - name: Set DEBUG default value
+    set_fact:
+      DEBUG: 0

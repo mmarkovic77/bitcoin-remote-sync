@@ -2,6 +2,9 @@
   shell: "bitcoin-cli stop"
 
 - name: Wait for bitcoin to stop
-  shell: "bitcoin-cli -getinfo 1> /dev/null 2> /dev/null; echo $?"
+  shell: "kill -0 $(cat {{ cloud_bitcoin_data_path }}/bitcoind.pid)"
   register: output
-  until: output.stdout != "0"
+  until: output.rc != 0
+  failed_when: output.rc == 0
+  delay: 5
+  retries: 300
