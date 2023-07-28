@@ -1,3 +1,7 @@
+# - name: "Check disk space"
+#   shell: df --output=avail -B 1 "$PWD" | tail -n 1
+#   register: output
+#   failed_when: output|int < CLOUD_DISK_SIZE_GB * 1024 * 1024 * 1024
 
 - debug: msg="Starting chain download"
 
@@ -9,16 +13,16 @@
       dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}"
       use_ssh_args: true
       compress: false
+      checksum: false
       delay_updates: false
+      archive: true
       rsync_opts:
-        - "--log-file={{playbook_dir}}/../rsync_chainstate.log"
-        - "-av"
+        - "--log-file={{playbook_dir}}/../rsync.log"
         - "--delete"
-        - "--append"
         - "--inplace"
-        - "--no-compress"
+        - "--whole-file"
         - "--human-readable"
-        - "--info=progress2"
+        - "-v"
 
   - name: Download blocks
     ansible.posix.synchronize:
@@ -27,17 +31,17 @@
       dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}"
       use_ssh_args: true
       compress: false
+      checksum: false
       delay_updates: false
+      archive: true
       rsync_opts:
-        - "--log-file={{playbook_dir}}/../rsync_blocks.log"
-        - "-av"
+        - "--log-file={{playbook_dir}}/../rsync.log"
         - "--delete"
-        - "--append"
         - "--inplace"
-        - "--no-compress"
+        - "--whole-file"
         - "--human-readable"
-        - "--info=progress2"
-    
+        - "-v"
+
   - name: Download indexes
     ansible.posix.synchronize:
       mode: pull
@@ -45,16 +49,16 @@
       dest: "{{ hostvars.localhost.BITCOIN_LOCAL_DATADIR }}"
       use_ssh_args: true
       compress: false
+      checksum: false
       delay_updates: false
+      archive: true
       rsync_opts:
-        - "--log-file={{playbook_dir}}/../rsync_indexes.log"
-        - "-av"
+        - "--log-file={{playbook_dir}}/../rsync.log"
         - "--delete"
-        - "--append"
         - "--inplace"
-        - "--no-compress"
+        - "--whole-file"
         - "--human-readable"
-        - "--info=progress2"
+        - "-v"
   rescue:
     - include_tasks: download-chain.yml
   

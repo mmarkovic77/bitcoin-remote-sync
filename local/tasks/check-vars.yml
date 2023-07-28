@@ -81,7 +81,7 @@
   - name: Check CLOUD_DISK_SIZE_GB var
     set_fact:
       CLOUD_DISK_SIZE_GB: " {{ (BITCOIN_USE_TESTNET == 1) | ternary(50, (BITCOIN_TXINDEX == 1) | ternary (600, 500 )) }}"
-  - debug: msg="Automatically set cloud disk size to{{ CLOUD_DISK_SIZE_GB }}GB depending on configuration."
+- debug: msg="Automatically set cloud disk size to{{ CLOUD_DISK_SIZE_GB }}GB depending on configuration."
 
 - name: Check BITCOIN_LOCAL_DATADIR var
   when: BITCOIN_LOCAL_DATADIR is undefined
