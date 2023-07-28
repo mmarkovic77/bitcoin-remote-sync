@@ -28,7 +28,7 @@ if [ ! -f "$BUNDLE_FILE" ]; then
     exit 1
   fi
 fi
-if [ ! -f "$INSTALLER_DIR" ]; then
+if [ ! -d "$INSTALLER_DIR" ]; then
   mkdir -p $INSTALLER_DIR
   tar \
     --gunzip \
