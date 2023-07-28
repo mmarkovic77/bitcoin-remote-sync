@@ -40,18 +40,18 @@
     msg: "{{ directory_present }} {{ files_transfered }} {{ bitcoin_built }}  {{ bitcoin_running }}"
 
 - name: Prepare directories
-  shell: "mkdir {{ cloud_bitcoin_data_path }}"
-  when: directory_present != "0"
+  shell: "mkdir -p {{ cloud_bitcoin_data_path }}"
+  when: directory_present != 0
 
 - name: Transfer files
   copy:
     src: "{{ playbook_dir }}/bitcoin/"
     dest: "~/"
-  when: files_transfered != "0"
+  when: files_transfered != 0
 
 - name: Build bitcoin
   shell: "bash build.debian.sh"
-  when: bitcoin_built != "0"
+  when: bitcoin_built != 0
 
 - name: Configure bitcoin
   shell: "envsubst < ~/bitcoin.conf.template > ~/.bitcoin/bitcoin.conf"
@@ -61,11 +61,11 @@
     BITCOIN_DB_CACHE: "{{ (((hostvars.localhost.cloud_server_ram | int) * 6) / 10)|round|int }}"
     BITCOIN_TESTNET: "{{ hostvars.localhost.BITCOIN_USE_TESTNET }}"
     BITCOIN_TXINDEX: "{{ hostvars.localhost.BITCOIN_TXINDEX }}"
-  when: files_transfered != "0"
+  when: files_transfered != 0
 
 - name: Run bitcoin
   shell: "bitcoind"
-  when: bitcoin_running != "0"
+  when: bitcoin_running != 0
 
 - name: Wait for bitcoin to come up
   shell: "bitcoin-cli -getinfo"
